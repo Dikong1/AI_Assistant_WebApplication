@@ -38,7 +38,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) error {
-	t, err := template.ParseFiles("frontend/templates/" + tmpl)
+	t, err := template.ParseFiles(tmpl)
 	if err != nil {
 		return err
 	}
