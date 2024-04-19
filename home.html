@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with ChatGPT</title>
+    <!-- Include CSS styles -->
+    <style>
+        /* CSS styles for message blocks */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .message-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: #fff;
+            text-align: right;
+        }
+        .chatgpt-message {
+            background-color: #28a745;
+            color: #fff;
+        }
+        /* CSS styles for text area */
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+        }
+        /* CSS styles for button */
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="message-container" id="message-container">
+    <!-- Messages will be appended here dynamically -->
+</div>
+
+<!-- Textarea for new message -->
+<textarea id="user-input" placeholder="Type your message"></textarea>
+<button onclick="sendMessage()">Send</button>
+
+<!-- Include JavaScript code -->
+<script>
+    function sendMessage() {
+        var userInput = document.getElementById('user-input').value;
+
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Define the endpoint URL
+        var endpointUrl = '/api/message';
+
+        // Set up the request
+        xhr.open('POST', endpointUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        // Define the data to send to the server
+        var data = JSON.stringify({ message: userInput });
+
+        // Set up event listener to handle response from server
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Server responded successfully, handle the response
+                var response = JSON.parse(xhr.responseText);
+                displayMessage(userInput, response);
+            } else {
+                // Handle error response from server
+                console.error('Request failed with status:', xhr.status);
+            }
+        };
+
+        // Send the request to the server
+        xhr.send(data);
+    }
+
+    function displayMessage(userMessage, chatGPTResponse) {
+        var messageContainer = document.getElementById('message-container');
+
+        // Create user message block
+        var userMessageBlock = document.createElement('div');
+        userMessageBlock.classList.add('message', 'user-message');
+        userMessageBlock.textContent = userMessage;
+        messageContainer.appendChild(userMessageBlock);
+
+        // Create chatGPT message block
+        var chatGPTMessageBlock = document.createElement('div');
+        chatGPTMessageBlock.classList.add('message', 'chatgpt-message');
+        chatGPTMessageBlock.textContent = chatGPTResponse;
+        messageContainer.appendChild(chatGPTMessageBlock);
+
+        // Clear textarea after sending message
+        document.getElementById('user-input').value = '';
+
+        // Scroll to bottom of message container
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+</script>
+</body>
+</html>
